@@ -28,7 +28,7 @@ export class Log {
   }
 
   public static error (message?: any, ...optionalParams: any[]):void {
-    console.info(this.c.red(message), optionalParams);
+    console.error(this.c.red(message), optionalParams);
   }
 
   public static debuf (message?: any, ...optionalParams: any[]):void {
