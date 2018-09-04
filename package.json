@@ -1,0 +1,27 @@
+{
+  "name": "zephyr",
+  "version": "0.1.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sevans045/zephyr.git"
+  },
+  "author": "sevans045",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sevans045/zephyr/issues"
+  },
+  "homepage": "https://github.com/sevans045/zephyr#readme",
+  "dependencies": {
+    "@types/chalk": "^2.2.0",
+    "@types/irc": "^0.3.32",
+    "@types/node": "^10.9.4",
+    "chalk": "^2.4.1",
+    "colors": "^1.3.2",
+    "irc": "^0.5.2"
+  }
+}
