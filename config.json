@@ -1,0 +1,11 @@
+{
+    "host": "127.0.0.1",
+    "port": "7777",
+    "pass": "admin",
+    "version": "Alpha 0.1",
+    "mainChannel": "#test",
+    "IRCAddress": "irc.fairplayinc.uk",
+    "IRCPort": "6667",
+    "IRCUsername": "taisho9000"
+}
+  
