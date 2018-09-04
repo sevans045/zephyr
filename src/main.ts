@@ -2,23 +2,23 @@
 /**
  * Node.js modules
  */
-import * as EventEmitter from 'events';
-import * as fs from 'fs';
-import * as net from 'net';
+import * as EventEmitter from "events";
+import * as fs from "fs";
+import * as net from "net";
 
 
 /**
  * Third-party modules
  */
-import * as c from 'colors';
-import * as ircPackage from 'irc';
+import * as c from "colors";
+import * as ircPackage from "irc";
 
 /**
  * Local imports
  */
-import * as config from './config.json';
-import { ProcessRawData } from './message-handling/ProcessRawData';
-import { Log } from './message-handling/Log';
+import * as config from "./config.json";
+import { ProcessRawData } from "./message-handling/ProcessRawData";
+import { Log } from "./message-handling/Log";
 
 export class Main {
 
@@ -26,28 +26,28 @@ export class Main {
   private client:net.Socket;
 
   public startUp () {
-    // Init IRC connection
-    this.initIRC();
+      // Init IRC connection
+      this.initIRC();
 
-    // Init socket events
-    this.initSocketEvents();
+      // Init socket events
+      this.initSocketEvents();
 
-    // Connect to RCON
-    this.connectToRcon();
+      // Connect to RCON
+      this.connectToRcon();
   }
 
   private initIRC () {
     var IRC = new ircPackage.Client(config.IRCAddress, config.IRCUsername, {
-      channels: ['#test'],
-      port: config.IRCPort,
-      realName: "I love Goks",
+        channels: ["#test"],
+        port: config.IRCPort,
+        realName: "I love Goks",
     });
 
-    IRC.addListener('message', function (sender:string, to:string, message:string) {
+    IRC.addListener("message", function (sender:string, to:string, message:string) {
         console.log(`${to} ${sender}: ${message}`);
     });
   
-    IRC.addListener('error', function (message:string) {
+    IRC.addListener("error", function (message:string) {
         console.log("IRC Error: " + message);
     });
   }
@@ -63,8 +63,8 @@ export class Main {
           this.client.on(eventName, (...args) => eventFunction.run(...args));
       });
       
-      this.client.removeAllListeners("data");
-      this.client.on("data", (...args) => ProcessRawData.parse(...args));
+        this.client.removeAllListeners("data");
+        this.client.on("data", (...args) => ProcessRawData.parse(...args));
     });
 
     // This loop reads the /renxevents/ folder and attaches each event file to the appropriate event.
