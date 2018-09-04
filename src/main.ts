@@ -5,6 +5,7 @@
 import events = require("events");
 import * as fs from "fs";
 import * as net from "net";
+import * as path from "path";
 
 
 /**
@@ -22,94 +23,101 @@ import { Log } from "./message-handling/Log";
 
 export class Main {
 
-    private IRC:ircPackage.Client;
-    private renX:events.EventEmitter;
-    private client:net.Socket;
-    private rconHandler:RCONHandler;
+    private IRC: ircPackage.Client;
+    private renX = new events.EventEmitter();
+    private client: net.Socket;
+    private rconHandler: RCONHandler;
 
-    public startUp () {
+    public startUp() {
         // Init IRC connection
         this.initIRC();
+
+        // Connect to RCON
+        this.connectToRcon();
 
         // Construct RCON handler now that we have IRC
         this.rconHandler = new RCONHandler(this.IRC, this.renX);
 
         // Init socket events
         this.initSocketEvents();
-
-        // Connect to RCON
-        this.connectToRcon();
     }
 
-    private initIRC () {
+    private initIRC() {
         this.IRC = new ircPackage.Client(config.IRCAddress, config.IRCUsername, {
             channels: ["#test"],
             port: config.IRCPort,
             realName: "I love Goks",
         });
 
-        this.IRC.addListener("message", function (sender:string, to:string, message:string) {
-            console.log(`${to} ${sender}: ${message}`);
+        this.IRC.addListener("message", function (sender: any, to: any, message: any) {
+            console.log(`${to} ${sender}: ${message instanceof String ? message : JSON.stringify(message)}`);
         });
 
-        this.IRC.addListener("error", function (message:string) {
-            console.log("IRC Error: " + message);
+        this.IRC.addListener("error", function (message: any) {
+            console.log("IRC Error: " + (message instanceof String ? message : JSON.stringify(message)));
         });
     }
 
-    private initSocketEvents () {
+    private initSocketEvents() {
+        let socketEventsDir = path.join(__dirname, 'socketevents');
+        let renxEventsDir = path.join(__dirname, 'socketevents');
+
         // This loop reads the /socketevents/ folder and attaches each event file to the appropriate event.
-        fs.readdir("./socketevents/", (err, files) => {
+        console.log('dirname = ', __dirname);
+        fs.readdir(socketEventsDir, (err, files) => {
             if (err) return console.error(err);
             files.forEach(file => {
-                let eventFunction = require(`./socketevents/${file}`);
+                let eventFunction = require(path.join(socketEventsDir, file));
                 let eventName = file.split(".")[0];
-            // super-secret recipe to call socketevents with all their proper arguments *after* the `client` var.
-                this.client.on(eventName, (...args) => eventFunction.run(...args));
+                // super-secret recipe to call socketevents with all their proper arguments *after* the `client` var.
+                this.client.on(eventName, (...args) => eventFunction.run(this.IRCSay.bind(this), ...args));
             });
-            
+
             this.client.removeAllListeners("data");
             this.client.on("data", (...args) => this.rconHandler.parse(...args));
         });
 
         // This loop reads the /renxevents/ folder and attaches each event file to the appropriate event.
-        this.renX = new events.EventEmitter();
-        fs.readdir("./renxevents/", (err, files) => {
+        fs.readdir(renxEventsDir, (err, files) => {
             if (err) return console.error(err);
             files.forEach(file => {
-                let eventFunction = require(`./renxevents/${file}`);
+                let eventFunction = require(path.join(renxEventsDir, file));
                 let eventName = file.split(".")[0];
                 // super-secret recipe to call renxevents with all their proper arguments *after* the `renx` var.
-                this.renX.on(eventName, (...args) => eventFunction.run(...args));
+                this.renX.on(eventName, (...args) => eventFunction.run(this.IRCSay.bind(this), ...args));
             });
         });
     }
 
-    private connectToRcon () {
-        var client = new net.Socket();
-        client.connect(config.port, config.host, function() {
+    private connectToRcon() {
+        this.client = new net.Socket();
+        this.client.connect(config.port, config.host, () => {
             Log.log(`Loading Zephyr version ${config.version}...`);
             Log.log(`Initiating connection to ${config.host}:${config.port}.`);
             //Authenticate.
             Log.log("Attempting to authenticate.");
-            client.write("a" + config.pass + "\n");
+            this.client.write("a" + config.pass + "\n");
             //Subscribe to public log.
             Log.log("Subscribing to public log.");
-            client.write("s\n");
+            this.client.write("s\n");
         });
 
         //Watch for commands from the CLI or stdin
         process.stdin.resume();
         process.stdin.setEncoding("utf8");
 
-        process.stdin.on("data", function(text) {
+        process.stdin.on("data", function (text) {
             if (text === "quit\n")
-                client.destroy();
+                this.client.destroy();
             else // \n is automatically appended when the user presses enter.
-                client.write("c" + text);
+                this.client.write("c" + text);
         });
+    }
+
+    public IRCSay(channel: string, text: string) {
+        this.IRC.say(channel, text);
     }
 }
 
-let m:Main = new Main();
+let m: Main = new Main();
 m.startUp();
