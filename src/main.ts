@@ -2,7 +2,7 @@
 /**
  * Node.js modules
  */
-import * as EventEmitter from "events";
+import events = require("events");
 import * as fs from "fs";
 import * as net from "net";
 
@@ -23,7 +23,7 @@ import { Log } from "./message-handling/Log";
 export class Main {
 
     private IRC:ircPackage.Client;
-    private renX:EventEmitter;
+    private renX:events.EventEmitter;
     private client:net.Socket;
     private rconHandler:RCONHandler;
 
@@ -73,7 +73,7 @@ export class Main {
         });
 
         // This loop reads the /renxevents/ folder and attaches each event file to the appropriate event.
-        this.renX = new NodeJS.EventEmitter();
+        this.renX = new events.EventEmitter();
         fs.readdir("./renxevents/", (err, files) => {
             if (err) return console.error(err);
             files.forEach(file => {
@@ -112,3 +112,4 @@ export class Main {
 }
 
 let m:Main = new Main();
+m.startUp();
