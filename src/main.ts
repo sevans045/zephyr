@@ -1,4 +1,3 @@
-
 /**
  * Node.js modules
  */
@@ -6,7 +5,6 @@ import events = require("events");
 import * as fs from "fs";
 import * as net from "net";
 import * as path from "path";
-
 
 /**
  * Third-party modules
@@ -20,6 +18,7 @@ import * as ircPackage from "irc";
 import * as config from "./config.json";
 import { RCONHandler } from "./message-handling/RCONHandler";
 import { Log } from "./message-handling/Log";
+import {PlayerHandler } from "./player-handling/PlayerHandler";
 
 export class Main {
 
@@ -27,6 +26,7 @@ export class Main {
     private renX = new events.EventEmitter();
     private client: net.Socket;
     private rconHandler: RCONHandler;
+    private renXPlayers: PlayerHandler;
 
     public startUp() {
         // Init IRC connection
@@ -103,7 +103,7 @@ export class Main {
             this.client.write("s\n");
         });
 
-        //Watch for commands from the CLI or stdin
+        // Watch for commands from the CLI or stdin
         process.stdin.resume();
         process.stdin.setEncoding("utf8");
 

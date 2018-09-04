@@ -1,4 +1,3 @@
-
 /**
  * Node.js modules
  */
@@ -31,10 +30,7 @@ export class RCONHandler {
 
     public parse (args: Buffer): void {
         // Convert the object received from the connection to a string.  
-        let dataStr = String(args);      
-        
-        // Enable me to have all messages displayed.
-        // console.log(data);    
+        let dataStr = String(args);         
 
         // Non-stripped type.
         const nostripdata = dataStr.split("");
@@ -52,16 +48,15 @@ export class RCONHandler {
 
         this.IRCSay(config.mainChannel, dataArr.join(' ; '));
         if (dataArr[0].startsWith("Conn")){
-            console.info("Connection has been authenticated.".green);
-            // this.IRCSay(config.mainChannel, "9Connection has been authenticated.");
+            Log.log("Connection has been authenticated.".green);
         }
         else if (dataArr[0].startsWith("Invalid")){
             Log.error("Invalid password! Authentication failed.");
         }
         else if (nostripdata[0].startsWith("v")){
-            this.IRCSay(config.mainChannel, `RCON Version: ${dataArr[0]}`);
-            this.IRCSay(config.mainChannel, `Game Version: ${dataArr[1]}`);
-            this.IRCSay(config.mainChannel, `Game Friendly Version: ${dataArr[2]}`);
+            Log.log(`RCON Version: ${dataArr[0]}`);
+            Log.log(`Game Version: ${dataArr[1]}`);
+            Log.log(`Game Friendly Version: ${dataArr[2]}`);
         }
     }
 

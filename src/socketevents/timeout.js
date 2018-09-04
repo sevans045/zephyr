@@ -8,5 +8,5 @@ const config = require('../config.json');
 const main = require('../main.js');
 
 exports.run = (IRCSay) => {
-  console.error(`Connection to ${config.host}:${config.port} timed out.`);
+    console.error(`Connection to ${config.host}:${config.port} timed out.`);
 }
