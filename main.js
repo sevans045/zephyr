@@ -212,7 +212,7 @@ function ProcessRawData(data) {
             var killerName = kSplit[2].trim();
             const killerPlayerID = kSplit[1];
             const team = kSplit[0];
-            if (killerPlayerID.includes("b")){ killerName = "[B]" + killerName};
+            if (killerPlayerID.includes("b")) killerName = "[B]" + killerName;
             RXEmit('kill', killerName, playerName, deathClass, team);
           }
         }
