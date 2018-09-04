@@ -44,9 +44,10 @@ export class Main {
 
     private initIRC() {
         this.IRC = new ircPackage.Client(config.IRCAddress, config.IRCUsername, {
-            channels: ["#test"],
+            channels: [config.mainChannel],
             port: config.IRCPort,
-            realName: "I love Goks",
+            realName: config.IRCUsername,
+            userName: config.IRCUsername
         });
 
         this.IRC.addListener("message", function (sender: any, to: any, message: any) {

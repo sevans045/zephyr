@@ -5,8 +5,7 @@ taisho.xyz
 */
 
 const config = require('../config.json');
-const main = require('../main.js');
 
-exports.run = (cNumber) => {
-    main.IRCSay(config.mainChannel, `9Subscribed as 9${cNumber}9.`);
+exports.run = (IRCSay, cNumber) => {
+    IRCSay(config.mainChannel, `9Subscribed as 9${cNumber}9.`);
 }

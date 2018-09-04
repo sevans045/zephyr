@@ -50,9 +50,10 @@ export class RCONHandler {
 
         this.simpleData(type, dataArr);
 
+        this.IRCSay(config.mainChannel, dataArr.join(' ; '));
         if (dataArr[0].startsWith("Conn")){
             console.info("Connection has been authenticated.".green);
-            this.IRCSay(config.mainChannel, "9Connection has been authenticated.");
+            // this.IRCSay(config.mainChannel, "9Connection has been authenticated.");
         }
         else if (dataArr[0].startsWith("Invalid")){
             Log.error("Invalid password! Authentication failed.");
@@ -393,6 +394,7 @@ export class RCONHandler {
     }
 
     private simpleData (type:string, data:string[]) {
+        // console.log('simpleData; args = ', arguments);
         if (type == "Enter;") {
             const split = data[2].split(",");
             const team = split[0];

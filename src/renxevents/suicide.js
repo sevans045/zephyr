@@ -5,11 +5,10 @@ taisho.xyz
 */
 
 const config = require('../config.json');
-const main = require('../main.js');
 
-exports.run = (playerName, deathClass, team) => {
+exports.run = (IRCSay, playerName, deathClass, team) => {
     if(team == "GDI")
-        main.IRCSay(config.mainChannel, `8${playerName} died. (12${deathClass}).`);
+        IRCSay(config.mainChannel, `8${playerName} died. (12${deathClass}).`);
     else
-        main.IRCSay(config.mainChannel, `4${playerName} died. (12${deathClass}).`);
+        IRCSay(config.mainChannel, `4${playerName} died. (12${deathClass}).`);
 }
