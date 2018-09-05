@@ -6,6 +6,11 @@ export interface Player {
   id: string;
   class: string;
   team: string;
+  isAdmin?: boolean;
+  isDev?: boolean;
+  isMod?: boolean;
+  isBot?: boolean;
+  permissionLevel: number;
 
   // Optional fields have question marks after
   optionalField?: number;
