@@ -13,6 +13,11 @@ import * as ircPackage from "irc";
  */
 import * as config from "../config.json";
 import { Log } from "./Log";
+import { DamageTypes } from "./models/DamageTypes";
+import { VehicleTypes } from "./models/VehicleTypes";
+import { BuildingTypes } from "./models/BuildingTypes";
+import { GDICharacterTypes } from "./models/GDICharacterTypes";
+import { NodCharacterTypes } from "./models/NodCharacterTypes";
 
 export class RCONHandler {
 
@@ -61,331 +66,23 @@ export class RCONHandler {
     }
 
     private friendlyClass (ufClass:string): string {
-        switch (ufClass) {
-            //DmgTypes
-        case "Rx_DmgType_RemoteC4":
-            return "Remote C4";
-        case "DmgType_Suicided":
-            return "Suicide";
-        case "Rx_DmgType_A10_Missile":
-            return "A10 Missile";
-        case "Rx_DmgType_AATower":
-            return "Anti-Air Tower";
-        case "Rx_DmgType_AGT_MG":
-            return "AGT Machine Guns";
-        case "Rx_DmgType_AGT_Rocket":
-            return "AGT Rockets";
-        case "Rx_DmgType_APC":
-            return "APC";
-        case "Rx_DmgType_APC_GDI":
-            return "GDI APC/M134 Minigun";
-        case "Rx_DmgType_APC_Nod":
-            return "Nod APC/M134 Minigun";
-        case "Rx_DmgType_ATMine":
-            return "Anti-Tank Mine";
-        case "Rx_DmgType_Abduction":
-            return "Abducted";
-        case "Rx_DmgType_Apache_Gun":
-            return "Apache/30mm Auto-Cannon";
-        case "Rx_DmgType_Apache_Passenger":
-            return "Apache Passenger Rocket";
-        case "Rx_DmgType_Apache_Rocket":
-            return "Apache/Hydra-70 Rockets";
-        case "Rx_DmgType_Artillery":
-            return "Mobile Artillery/155mm Howitzer";
-        case "Rx_DmgType_AutoRifle":
-            return "Auto Rifle";
-        case "Rx_DmgType_BarbedWire":
-            return "Barbed Wire";
-        case "Rx_DmgType_Buggy":
-            return "Buggy/.50 Caliber Machine Gun";
-        case "Rx_DmgType_Bullet":
-            return "Bullet";
-        case "Rx_DmgType_Burn":
-            return "Burn";
-        case "Rx_DmgType_BurnC4":
-            return "C4 Burn";
-        case "Rx_DmgType_Carbine":
-            return "Carbine";
-        case "Rx_DmgType_ChainGun":
-            return "Chain Gun";
-        case "Rx_DmgType_Chemical_Thrower":
-            return "Chemical Sprayer";
-        case "Rx_DmgType_Chinook":
-            return "Chinook";
-        case "Rx_DmgType_Chinook_GDI":
-            return "GDI Chinook/Gatling Guns";
-        case "Rx_DmgType_Chinook_Nod":
-            return "Nod Chinook/Gatling Guns";
-        case "Rx_DmgType_CruiseMissile":
-            return "Cruise Missile";
-        case "Rx_DmgType_Drowned":
-            return "Drowned";
-        case "Rx_DmgType_EMP":
-            return "EMP";
-        case "Rx_DmgType_EMPGrenade":
-            return "EMP Grenade";
-        case "DmgType_Explosive":
-            return "Explosive";
-        case "Rx_DmgType_Fell":
-            return "Fell";
-        case "Rx_DmgType_FireBleed":
-            return "Fire";
-        case "Rx_DmgType_FlakCannon":
-            return "Flak Cannon";
-        case "Rx_DmgType_FlakCannon_Alt":
-            return "Flak Cannon Alternate Fire";
-        case "Rx_DmgType_FlameTank":
-            return "Flame Tank/Flamethrowers";
-        case "Rx_DmgType_FlameThrower":
-            return "Flame Thrower";
-        case "Rx_DmgType_Grenade":
-            return "Grenade";
-        case "Rx_DmgType_GrenadeLauncher":
-            return "Grenade Launcher";
-        case "Rx_DmgType_GuardTower":
-            return "Guard Tower";
-        case "Rx_DmgType_GunEmpl":
-            return "Gun Emplacement";
-        case "Rx_DmgType_GunEmpl_Alt":
-            return "Gun Emplacement Alternate Fire";
-        case "Rx_DmgType_Headshot":
-            return "Headshot";
-        case "Rx_DmgType_HeavyPistol":
-            return "Heavy Pistol";
-        case "Rx_DmgType_HoverCraft_Cannon":
-            return "Hovercraft Cannon";
-        case "Rx_DmgType_HoverCraft_Rockets":
-            return "Hovercraft Rockets";
-        case "Rx_DmgType_Humvee":
-            return "Humvee/.50 Caliber Machine Gun";
-        case "Rx_DmgType_IonCannon":
-            return "Ion Cannon";
-        case "Rx_DmgType_LaserChainGun":
-            return "Laser Chain Gun";
-        case "Rx_DmgType_LaserRifle":
-            return "Laser Rifle";
-        case "Rx_DmgType_LightTank":
-            return "Light Tank/75mm Cannon";
-        case "Rx_DmgType_M2Bradley":
-            return "M2 Bradley";
-        case "Rx_DmgType_M2Bradley_Rocket":
-            return "M2 Bradley Rocket";
-        case "Rx_DmgType_MRLS":
-            return "MRLS/M269 Missiles";
-        case "Rx_DmgType_MammothTank_Cannon":
-            return "Mammoth Tank/120mm Cannon";
-        case "Rx_DmgType_MammothTank_Missile":
-            return "Mammoth Tank/Tusk Missile";
-        case "Rx_DmgType_MarksmanRifle":
-            return "Marksman Rifle";
-        case "Rx_DmgType_MediumTank":
-            return "Medium Tank/105mm Cannon";
-        case "Rx_DmgType_MissileLauncher":
-            return "Missile Launcher";
-        case "Rx_DmgType_MissileLauncher_Alt":
-            return "Missile Launcher Alternate Fire";
-        case "Rx_DmgType_Nuke":
-            return "Nuclear Strike";
-        case "Rx_DmgType_Obelisk":
-            return "Obelisk Laser";
-        case "Rx_DmgType_Orca_Gun":
-            return "Orca/.50 Caliber Machine Gun";
-        case "Rx_DmgType_Orca_Missile":
-            return "Orca/Hellfire  Missiles";
-        case "Rx_DmgType_Orca_Passenger":
-            return "Orca Passenger";
-        case "Rx_DmgType_Pancake":
-            return "Pancake";
-        case "Rx_DmgType_PersonalIonCannon":
-            return "Personal Ion Cannon";
-        case "Rx_DmgType_Pistol":
-            return "Pistol";
-        case "Rx_DmgType_ProxyC4":
-            return "Proximity C4";
-        case "Rx_DmgType_Railgun":
-            return "Railgun";
-        case "Rx_DmgType_RamjetRifle":
-            return "Ramjet Rifle";
-        case "Rx_DmgType_RanOver":
-            return "Ran Over";
-        case "Rx_DmgType_Rocket":
-            return "Rocket";
-        case "Rx_DmgType_RocketEmpl_Missile":
-            return "Rocket Emplacement Missile";
-        case "Rx_DmgType_RocketEmpl_Swarm":
-            return "Rocket Emplacement Swarm";
-        case "Rx_DmgType_RocketLauncher":
-            return "Rocket Launcher";
-        case "Rx_DmgType_SAMSite":
-            return "SAM Site";
-        case "Rx_DmgType_SMG":
-            return "SMG";
-        case "Rx_DmgType_Shell":
-            return "Shell";
-        case "Rx_DmgType_Shotgun":
-            return "Shotgun";
-        case "Rx_DmgType_SniperRifle":
-            return "Sniper Rifle";
-        case "Rx_DmgType_Special":
-            return "Special";
-        case "Rx_DmgType_StealthTank":
-            return "Stealth Tank/TOW Missiles";
-        case "Rx_DmgType_TacticalRifle":
-            return "Tactical Rifle";
-        case "Rx_DmgType_TacticalRifleGrenade":
-            return "Tactical Rifle Grenade";
-        case "Rx_DmgType_Tiberium":
-            return "Tiberium";
-        case "Rx_DmgType_TiberiumAutoRifle":
-            return "Tiberium Auto Rifle";
-        case "Rx_DmgType_TiberiumAutoRifle_Blue":
-            return "Blue Tiberium Auto Rifle";
-        case "Rx_DmgType_TiberiumAutoRifle_Flechette_Blue":
-            return "Blue Tiberium Auto Rifle";
-        case "Rx_DmgType_TiberiumBleed":
-            return "Tiberium Decay";
-        case "Rx_DmgType_TimedC4":
-            return "Timed C4";
-        case "Rx_DmgType_Turret":
-            return "Turret";
-        case "Rx_DmgType_VehicleMG":
-            return "Vehicle MG";
-        case "Rx_DmgType_VoltAutoRifle":
-            return "Volt Auto Rifle";
-        case "Rx_DmgType_VoltRifle_Alt":
-            return "Volt Auto Rifle";
 
-
-        //Vehicles
-        case "Rx_Vehicle_MediumTank":
-            return "Medium Tank";
-        case "Rx_Vehicle_A10":
-            return "A10";
-        case "Rx_Vehicle_AC130":
-            return "AC130";
-        case "Rx_Vehicle_APC_GDI":
-            return "GDI APC";
-        case "Rx_Vehicle_APC_Nod":
-            return "Nod APC";
-        case "Rx_Vehicle_Apache":
-            return "Apache";
-        case "Rx_Vehicle_Artillery":
-            return "Mobile Artillery";
-        case "Rx_Vehicle_Buggy":
-            return "Buggy";
-        case "Rx_Vehicle_Bus":
-            return "Bus";
-        case "Rx_Vehicle_C130":
-            return "C130";
-        case "Rx_Vehicle_FlameTank":
-            return "Flame Tank";
-        case "Rx_Vehicle_Harvester_GDI":
-            return "GDI Harvester";
-        case "Rx_Vehicle_Harvester_Nod":
-            return "Nod Harvester";
-        case "Rx_Vehicle_Hovercraft":
-            return "Hovercraft";
-        case "Rx_Vehicle_Humvee":
-            return "Humvee";
-        case "Rx_Vehicle_LightTank":
-            return "Light Tank";
-        case "Rx_Vehicle_M2Bradley":
-            return "M2 Bradley";
-        case "Rx_Vehicle_MRLS":
-            return "MRLS";
-        case "Rx_Vehicle_MammothTank":
-            return "Mammoth Tank";
-        case "Rx_Vehicle_Mig35":
-            return "Mig35";
-        case "Rx_Vehicle_Orca":
-            return "Orca";
-        case "Rx_Vehicle_StealthTank":
-            return "Stealth Tank";
-
-        //Buildings
-        case "Rx_Building_Refinery_Nod":
-            return "Nod Refinery";
-        case "Rx_Building_PowerPlant_Nod":
-            return "Nod Power Plant";
-        case "Rx_Building_HandOfNod_Internals":
-            return "Hand of Nod";
-        case "Rx_Building_AirStrip_Internals":
-            return "Airstrip";
-        case "Rx_Building_PowerPlant_GDI_Internals":
-            return "GDI Power Plant";
-        case "Rx_Building_WeaponsFactory_Internals":
-            return "Weapons Factory";
-        case "Rx_Building_Refinery_GDI_Internals":
-            return "GDI Refinery";
-
-        //FamilyInfo
-
-            //GDI
-        case "Rx_FamilyInfo_GDI_Engineer":
-            return "GDI Engineer";
-        case "Rx_FamilyInfo_GDI_Grenadier":
-            return "Grenadier";
-        case "Rx_FamilyInfo_GDI_Gunner":
-            return "Gunner";
-        case "Rx_FamilyInfo_GDI_Havoc":
-            return "Havoc";
-        case "Rx_FamilyInfo_GDI_Hotwire":
-            return "Hotwire";
-        case "Rx_FamilyInfo_GDI_Marksman":
-            return "GDI Marksman";
-        case "Rx_FamilyInfo_GDI_McFarland":
-            return "McFarland";
-        case "Rx_FamilyInfo_GDI_Mobius":
-            return "Mobius";
-        case "Rx_FamilyInfo_GDI_Officer":
-            return "GDI Officer";
-        case "Rx_FamilyInfo_GDI_Patch":
-            return "Patch";
-        case "Rx_FamilyInfo_GDI_RocketSoldier":
-            return "GDI Rocket Soldier";
-        case "Rx_FamilyInfo_GDI_Shotgunner":
-            return "GDI Shotgunner";
-        case "Rx_FamilyInfo_GDI_Soldier":
-            return "GDI Soldier";
-        case "Rx_FamilyInfo_GDI_Sydney":
-            return "Sydney";
-
-            //Nod
-        case "Rx_FamilyInfo_Nod_BlackHandSniper":
-            return "Black Hand Sniper";
-        case "Rx_FamilyInfo_Nod_ChemicalTrooper":
-            return "Chem Trooper";
-        case "Rx_FamilyInfo_Nod_Engineer":
-            return "Nod Engineer";
-        case "Rx_FamilyInfo_Nod_FlameTrooper":
-            return "Flame Trooper";
-        case "Rx_FamilyInfo_Nod_LaserChainGunner":
-            return "Laser Chain Gunner";
-        case "Rx_FamilyInfo_Nod_Marksman":
-            return "Nod Marksman";
-        case "Rx_FamilyInfo_Nod_Mendoza":
-            return "Mendoza";
-        case "Rx_FamilyInfo_Nod_Officer":
-            return "Nod Officer";
-        case "Rx_FamilyInfo_Nod_Raveshaw":
-            return "Raveshaw";
-        case "Rx_FamilyInfo_Nod_RocketSoldier":
-            return "Nod Rocket Soldier";
-        case "Rx_FamilyInfo_Nod_Sakura":
-            return "Sakura";
-        case "Rx_FamilyInfo_Nod_Shotgunner":
-            return "Nod Shotgunner";
-        case "Rx_FamilyInfo_Nod_Soldier":
-            return "Nod Soldier";
-        case "Rx_FamilyInfo_Nod_Technician":
-            return "Technician";
-        case "Rx_FamilyInfo_Nod_StealthBlackHand":
-            return "Stealth Black Hand";
-
-        default:
-            return "Unparsed Class: " + ufClass;
+        // DmgType_Explosive was part of the original list in this file. Might not be needed, just being safe. ~ Terekhov
+        if (ufClass === 'DmgType_Explosive') {
+            ufClass = 'Rx_DmgType_Explosive';
         }
+        if (ufClass.startsWith("Rx_DmgType")) {
+            return DamageTypes.get(ufClass);
+        } else if (ufClass.startsWith("Rx_Vehicle")) {
+            return VehicleTypes.get(ufClass);
+        } else if (ufClass.startsWith("Rx_Building")) {
+            return BuildingTypes.get(ufClass);
+        } else if (ufClass.startsWith("Rx_FamilyInfo_GDI")) {
+            return GDICharacterTypes.get(ufClass);
+        } else if (ufClass.startsWith("Rx_FamilyInfo_Nod")) {
+            return NodCharacterTypes.get(ufClass);
+        }
+        return "Unparsed Class: " + ufClass;
     }
 
     private simpleData (type:string, data:string[]) {
