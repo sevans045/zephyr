@@ -21,30 +21,35 @@ import { NodCharacterTypes } from "./models/NodCharacterTypes";
 
 export class RCONHandler {
 
-    private IRC:ircPackage.Client;
-    private renX:EventEmitter;
+    private static UNKNOWN_CLASS = "??????";
 
-    constructor (private IRCin:ircPackage.Client, private renXIn: EventEmitter) {
+    private IRC: ircPackage.Client;
+    private renX: EventEmitter;
+
+    constructor(private IRCin: ircPackage.Client, private renXIn: EventEmitter) {
         this.IRC = IRCin;
         this.renX = renXIn;
     }
 
-    private IRCSay(channel:string, text:string) {
+    private IRCSay(channel: string, text: string) {
         this.IRC.say(channel, text);
     }
 
-    public parse (args: Buffer): void {
+    public parse(args: Buffer): void {
         // Convert the object received from the connection to a string.  
-        let dataStr = String(args);         
+        let dataStr = String(args);
+
+
+        // TODO Terekhov -- use event-headers types to validate this data
 
         // Non-stripped type.
         const nostripdata = dataStr.split("");
 
         // Strip the type ID.
-        dataStr = dataStr.substr(1);  
+        dataStr = dataStr.substr(1);
 
         // Split the raw message into seperate strings, removing the delimiter.
-        let dataArr:string[] = dataStr.split("");
+        let dataArr: string[] = dataStr.split("");
 
         // Assign a 'type'. Enter, TeamJoin, Exit etc.
         const type = dataArr[1];
@@ -52,41 +57,47 @@ export class RCONHandler {
         this.simpleData(type, dataArr);
 
         this.IRCSay(config.mainChannel, dataArr.join(' ; '));
-        if (dataArr[0].startsWith("Conn")){
+        if (dataArr[0].startsWith("Conn")) {
             Log.log("Connection has been authenticated.".green);
         }
-        else if (dataArr[0].startsWith("Invalid")){
+        else if (dataArr[0].startsWith("Invalid")) {
             Log.error("Invalid password! Authentication failed.");
         }
-        else if (nostripdata[0].startsWith("v")){
+        else if (nostripdata[0].startsWith("v")) {
             Log.log(`RCON Version: ${dataArr[0]}`);
             Log.log(`Game Version: ${dataArr[1]}`);
             Log.log(`Game Friendly Version: ${dataArr[2]}`);
         }
     }
 
-    private friendlyClass (ufClass:string): string {
+    private friendlyClass(ufClass: string): string {
 
         // DmgType_Explosive was part of the original list in this file. Might not be needed, just being safe. ~ Terekhov
         if (ufClass === 'DmgType_Explosive') {
             ufClass = 'Rx_DmgType_Explosive';
         }
+
+        // Get the human-readable version, if we have it
+        let retValue = null;
         if (ufClass.startsWith("Rx_DmgType")) {
-            return DamageTypes.get(ufClass);
+            retValue = DamageTypes.get(ufClass);
         } else if (ufClass.startsWith("Rx_Vehicle")) {
-            return VehicleTypes.get(ufClass);
+            retValue = VehicleTypes.get(ufClass);
         } else if (ufClass.startsWith("Rx_Building")) {
-            return BuildingTypes.get(ufClass);
+            retValue = BuildingTypes.get(ufClass);
         } else if (ufClass.startsWith("Rx_FamilyInfo_GDI")) {
-            return GDICharacterTypes.get(ufClass);
+            retValue = GDICharacterTypes.get(ufClass);
         } else if (ufClass.startsWith("Rx_FamilyInfo_Nod")) {
-            return NodCharacterTypes.get(ufClass);
+            retValue = NodCharacterTypes.get(ufClass);
         }
-        return "Unparsed Class: " + ufClass;
+        if (!retValue) {
+            Log.error("Unparsed class: " + ufClass)
+        }
+        return retValue || RCONHandler.UNKNOWN_CLASS
     }
 
-    private simpleData (type:string, data:string[]) {
-        // console.log('simpleData; args = ', arguments);
+    private simpleData(type: string, data: string[]) {
+        console.log('simpleData; args = ', arguments);
         if (type == "Enter;") {
             const split = data[2].split(",");
             const team = split[0];
@@ -113,35 +124,35 @@ export class RCONHandler {
             const split = data[2].split(",");
             const team = split[0];
             const playerID = split[1];
-            if (playerID.includes("b")){ playerName = "[B]" + playerName};
+            if (playerID.includes("b")) { playerName = "[B]" + playerName };
             var playerName = split[2];
-            if (action == "left"){
-                if(team == "GDI")
+            if (action == "left") {
+                if (team == "GDI")
                     this.renX.emit("teamjoin", playerName, "GDI", true);
                 else
                     this.renX.emit("teamjoin", playerName, "Nod", true);
             }
             else if (team == "GDI")
                 this.renX.emit("teamjoin", playerName, "GDI", false);
-            else 
+            else
                 this.renX.emit("teamjoin", playerName, "Nod", false);
-            
+
         }
         else if (type == "Exit;") {
             const split = data[2].split(",");
             var playerName = split[2].trim();
             const playerID = split[1];
             const team = split[0];
-            if (playerID.includes("b")){ playerName = "[B]" + playerName};
+            if (playerID.includes("b")) { playerName = "[B]" + playerName };
             //console.log(gameLog(`${playerName} left the game.`, team));
         }
         else if (type == "Purchase;") {
-            const split = data[data.length-1].split(",");
+            const split = data[data.length - 1].split(",");
             var playerName = split[2].trim();
             const boughtClass = this.friendlyClass(data[3]);
             const team = split[0];
             const playerID = split[1];
-            if (playerID.includes("b")){ playerName = "[B]" + playerName};
+            if (playerID.includes("b")) { playerName = "[B]" + playerName };
             if (data[2] == "refill") {
                 //console.log(gameLog(`${playerName} purchased a refill.`, team));
             } else if (data[2] == "character" || "vehicle") {
@@ -152,69 +163,70 @@ export class RCONHandler {
             if (data[2] == "player" || "bot") {
                 console.error(data);
                 const split = data[3].split(",");
-                const spawnClass = this.friendlyClass(data[data.length-1].trim());
+                const spawnClass = this.friendlyClass(data[data.length - 1].trim());
                 const playerID = split[1];
                 const team = split[0];
-                var playerName  = split[2];
+                var playerName = split[2];
                 if (playerID.includes("b"))
                     playerName = "[B]" + playerName;
 
-                if(data.length == 3 && data[2] == "bot")
+                if (data.length == 3 && data[2] == "bot")
                     this.renX.emit('spawn', playerName, "default", team);
 
-                if (!data[3].includes("Harvester_")){ //Hopefully fix a crash with harvester spawning.
+                if (!data[3].includes("Harvester_")) { //Hopefully fix a crash with harvester spawning.
                     this.renX.emit('spawn', playerName, spawnClass, team);
                 }
-            } else if (data[2].includes("vehicle")){
-            const split = data[3].split(",");
-            if (split[1] == "Rx_Vehicle_Harvester_GDI\n"){
-                this.renX.emit("harvyspawn", "GDI");
-            } else if (split[1] == "Rx_Vehicle_Harvester_Nod\n"){
-                this.renX.emit("harvyspawn", "Nod");
-            }
+            } else if (data[2].includes("vehicle")) {
+                const split = data[3].split(",");
+                if (split[1] == "Rx_Vehicle_Harvester_GDI\n") {
+                    this.renX.emit("harvyspawn", "GDI");
+                } else if (split[1] == "Rx_Vehicle_Harvester_Nod\n") {
+                    this.renX.emit("harvyspawn", "Nod");
+                }
             }
         }
         else if (type == "Death;") {
-            if (data[2] == "player" || "bot"){
-            const deathClass = this.friendlyClass(data[data.length-1].trim());
-            const split = data[3].split(",");
-            var playerName = split[2].trim();
-            const playerID = split[1];
-            const team = split[0];
-            if (playerID.includes("b")){ playerName = "[B]" + playerName};
-            if (data[4] == "suicide by"){
-                this.renX.emit('suicide', playerName, deathClass, team);
-            } else if (data[4] == "by"){
-                const kSplit = data[5].split(",");
-                var killerName = kSplit[2].trim();
-                const killerPlayerID = kSplit[1];
-                const team = kSplit[0];
-                if (killerPlayerID.includes("b")){ killerName = "[B]" + killerName};
-                this.renX.emit('kill', killerName, playerName, deathClass, team);
-            }
+            if (data[2] == "player" || "bot") {
+                const deathClass = this.friendlyClass(data[data.length - 1].trim());
+                const split = data[3].split(",");
+                var playerName = split[2].trim();
+                const playerID = split[1];
+                const team = split[0];
+                if (playerID.includes("b")) { playerName = "[B]" + playerName };
+                if (data[4] == "suicide by") {
+                    this.renX.emit('suicide', playerName, deathClass, team);
+                } else if (data[4] == "by") {
+                    const kSplit = data[5].split(",");
+                    var killerName = kSplit[2].trim();
+                    const killerPlayerID = kSplit[1];
+                    const team = kSplit[0];
+                    if (killerPlayerID.includes("b")) { killerName = "[B]" + killerName };
+                    this.renX.emit('kill', killerName, playerName, deathClass, team);
+                }
             }
         }
         else if (type == "Destroyed;") {
-            const deathClass = this.friendlyClass(data[data.length-1].trim());
+            const deathClass = this.friendlyClass(data[data.length - 1].trim());
             var destroyedClass = this.friendlyClass(data[3]);
             const split = data[5].split(",");
             const team = split[0];
             var killerName = split[2].trim();
             const killerID = split[1];
-            if (killerID.includes("b")){ killerName = "[B]" + killerName};
-            if (data[2].includes(("vehicle" || "emplacement" || "defence"))){
-            //console.log(gameLog(`${killerName} destroyed a ${destroyedClass}. (${deathClass})`, team));
+            if (killerID.includes("b")) { killerName = "[B]" + killerName };
+            if (data[2].includes(("vehicle" || "emplacement" || "defence"))) {
+                //console.log(gameLog(`${killerName} destroyed a ${destroyedClass}. (${deathClass})`, team));
             } else {
-            //console.log(gameLog(`${killerName} destroyed the ${destroyedClass}. (${deathClass})`, team));
+                //console.log(gameLog(`${killerName} destroyed the ${destroyedClass}. (${deathClass})`, team));
             }
         }
         else if (type == "MatchEnd;") {
-            const gdiScore = data[data.length-2].substr(4);
-            const nodScore = data[data.length-1].substr(4);
-            if (data[2].includes("tie")){
-            console.log("The game ended in a tie.");
-            } else if (data[3].includes("GDI" || "Nod")){ var winTeam = data[3];
-            console.log(`${winTeam} won the match. GDI: ${gdiScore} Nod: ${nodScore}`);
+            const gdiScore = data[data.length - 2].substr(4);
+            const nodScore = data[data.length - 1].substr(4);
+            if (data[2].includes("tie")) {
+                console.log("The game ended in a tie.");
+            } else if (data[3].includes("GDI" || "Nod")) {
+                var winTeam = data[3];
+                console.log(`${winTeam} won the match. GDI: ${gdiScore} Nod: ${nodScore}`);
             }
 
         }
