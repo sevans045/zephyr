@@ -40,7 +40,7 @@ export abstract class DamageTypes {
         ["Rx_DmgType_Drowned", "Drowned"],
         ["Rx_DmgType_EMP", "EMP"],
         ["Rx_DmgType_EMPGrenade", "EMP Grenade"],
-        ["DmgType_Explosive", "Explosive"],
+        ["Rx_DmgType_Explosive", "Explosive"],
         ["Rx_DmgType_Fell", "Fell"],
         ["Rx_DmgType_FireBleed", "Fire"],
         ["Rx_DmgType_FlakCannon", "Flak Cannon"],
